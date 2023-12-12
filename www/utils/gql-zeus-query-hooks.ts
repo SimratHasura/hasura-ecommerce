@@ -14,6 +14,9 @@ import {
   useQuery,
   useSubscription,
 } from "@apollo/client";
+
+import { useState, useEffect } from "react";
+
 import {
   $,
   MapType,
@@ -25,6 +28,48 @@ import {
 } from "./generated/graphql-client-sdk";
 
 export { $ as $ };
+
+export function useFetchedQuery(endpoint: string, naturalQuery: string, queryFilters: Record<string, any>) {
+  const [result, setResult] = useState({ loading: true, error: null, data: null });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!naturalQuery) {
+        setResult({
+          loading: false,
+          error: new Error("The 'naturalQuery' cannot be null or empty."),
+          data: null
+        });
+        return;
+      }
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ natural_query: naturalQuery ,
+          query_filters: queryFilters
+          }),
+        });
+
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status}, Body: ${text}`);
+        }
+
+        const data = await response.json();
+        setResult({ loading: false, error: null, data });
+      } catch (error) {
+        setResult({ loading: false, error, data: null });
+      }
+    };
+
+    fetchData();
+  }, [endpoint, naturalQuery]);
+
+  return result;
+}
+
 
 export function useTypedQuery<Q extends ValueTypes["query_root"]>(
   query: Q,

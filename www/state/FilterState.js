@@ -9,6 +9,8 @@ export const onlyOnSale = atom(false);
 export const onlyFinalClearance = atom(false);
 export const selectedBrands = atom([]);
 export const selectedCategory = atom("home_furnishing");
+export const categoryDisplayName = atom("Home Furnishing");
+
 
 export const searchState = atom((get) => ({
   searchString: get(searchString),
@@ -20,4 +22,5 @@ export const searchState = atom((get) => ({
   selectedBrands: get(selectedBrands),
   includeOutOfStock: get(includeOutOfStock),
   category: get(selectedCategory),
+  category_display_name: get(categoryDisplayName),
 }));

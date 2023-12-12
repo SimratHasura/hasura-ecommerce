@@ -13,9 +13,7 @@ import {
   categoriesLoadingError,
   fetchCategoryData,
 } from "../state/CategoryState";
-
-import { searchString } from "../state/FilterState";
-
+import { searchString, categoryDisplayName } from "../state/FilterState";
 import HeaderControls from "./HeaderControls";
 
 const NUM_DISPLAYED_CATEGORIES = 10;
@@ -26,22 +24,33 @@ const Header = () => {
   const { query } = router;
 
   const [searchValue, setSearchValue] = useAtom(searchString);
+  const [, setCategoryDisplayName] = useAtom(categoryDisplayName); // Use set function for categoryDisplayName
+  const [tempSearchValue, setTempSearchValue] = React.useState(searchValue);
   const [searchIsOpen, setSearchIsOpen] = React.useState(false);
 
   const [_, fetchCategories] = useAtom(fetchCategoryData);
   const [categoriesState] = useAtom(categories);
-  const [categoriesLoadingState] = useAtom(categoriesLoading);
 
   React.useEffect(() => {
     fetchCategories();
   }, []);
+
+  // Function to handle the search button click
+  const handleSearchClick = () => {
+    setSearchValue(tempSearchValue);
+  };
+
+  // Function to handle category selection, setting the display name
+  const handleCategorySelection = (displayName) => {
+    setCategoryDisplayName(displayName); // Set the category display name when a category is selected
+  };
 
   return (
     <>
       <header className="flex-middle pad-sm">
         <div className="col-2">
           <div className="logobox">
-            <img src="/logo.svg" />
+            <img src="/logo.svg" alt="Logo" />
           </div>
         </div>
         <div className="col-6">
@@ -49,13 +58,13 @@ const Header = () => {
             <input
               id="searchbox"
               placeholder="Search"
-              value={searchValue}
+              value={tempSearchValue}
               onFocus={() => setSearchIsOpen(true)}
               onBlur={() => setSearchIsOpen(false)}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={(e) => setTempSearchValue(e.target.value)}
             />
-            <button className="primary">
-              <ion-icon className="dark" name="search" />
+            <button className="primary" onClick={handleSearchClick}>
+              <ion-icon name="search" />
             </button>
           </div>
           <div
@@ -103,16 +112,16 @@ const Header = () => {
             <ion-icon name="menu" /> Menu
           </span>
         </button>
-        {categoriesState.length &&
+        {categoriesState.length > 0 &&
           categoriesState
             .slice(0, NUM_DISPLAYED_CATEGORIES)
             .map((category, index) => {
-              const active = query.category === category.name;
+              const isActive = query.category === category.name;
               return (
                 <Link href={`/category/${category.name}`} key={index}>
-                  <a>
+                  <a onClick={() => handleCategorySelection(category.display_name)}>
                     <span
-                      className={`sub-nav strong sm ${active ? "active" : ""}`}
+                      className={`sub-nav strong sm ${isActive ? "active" : ""}`}
                     >
                       {category.display_name}
                     </span>

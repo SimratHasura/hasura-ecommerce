@@ -1,9 +1,9 @@
+import React, { useState, useEffect } from 'react';
 import { useAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import * as React from "react";
 import { searchState } from "../state/FilterState";
-import { useTypedQuery } from "../utils/gql-zeus-query-hooks";
+import { useFetchedQuery } from "../utils/gql-zeus-query-hooks";
 import Offer from "./Offer";
 
 const AllOffers = () => {
@@ -12,82 +12,49 @@ const AllOffers = () => {
 
   const page: number = Number(router.query.page) || 1;
   const numItemsPerPage: number = Number(router.query.numItemsPerPage) || 12;
-
-  function goToPage(page: number) {
-    router.push({ pathname: "./", query: { page } });
-  }
-
-  const { data, error, loading } = useTypedQuery({
-    product: [
-      {
-        limit: numItemsPerPage,
-        ...(page > 1 && { offset: page * numItemsPerPage }),
-        where: {
-          name: {
-            _ilike: `%${search.searchString}%` || null,
-          },
-          category: {
-            name: {
-              _eq: search.category,
-            },
-          },
-          price: {
-            _is_null: false,
-            _gte: Number(0),
-            _lte: Number(1000),
-          },
-          ...(search.selectedBrands?.length && {
-            brand: { _in: search.selectedBrands },
-          }),
-        },
-      },
-      {
-        id: true,
-        name: true,
-        description: true,
-        price: true,
-        image_urls: [{}, true],
-        brand: true,
-      },
-    ],
+  const naturalQuery = search.searchString; // Assuming 'search' holds the natural query string
+  console.log("naturalQuery: "+ naturalQuery)
+  fetch(`${process.env.NEXT_PUBLIC_HASURA_SUPERRAG_CLIENTSIDE}/hello_world`)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`[HelloWorld]: HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('[HelloWorld]: Data:', data);
+  })
+  .catch(error => {
+    console.error('[HelloWorld]: Fetch error:', error.message);
   });
 
-  const PageNavigationButtons = () => {
-    const staticPreviousPage = (
-      <button onClick={() => goToPage(page - 1)}>
-        <ion-icon name="arrow-back-outline" />
-        Previous{" "}
-      </button>
-    );
 
-    const previousPage = (
-      <button onClick={() => goToPage(page - 1)}>{page - 1}</button>
-    );
 
-    const currentPage = <button className="blank disabled">{page}</button>;
+  const superrag_server = process.env.NEXT_PUBLIC_HASURA_SUPERRAG_CLIENTSIDE;
+  const superrag_endpoint = superrag_server + "/query_product"
 
-    const nextPage = (
-      <button onClick={() => goToPage(page + 1)}>{page + 1}</button>
-    );
 
-    const staticNextPage = (
-      <button onClick={() => goToPage(page + 1)}>
-        Next <ion-icon name="arrow-forward-outline" />
-      </button>
-    );
+  // Function to navigate to a different page
+  function goToPage(newPage: number) {
+    router.push({ pathname: "./", query: { page: newPage } });
+  }
 
-    return (
-      <div className="center mb-md">
-        {[
-          staticPreviousPage,
-          previousPage,
-          currentPage,
-          nextPage,
-          staticNextPage,
-        ]}
-      </div>
-    );
-  };
+  // // New state for loading and error management
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState(null);
+
+  const queryFilters = {
+    category: search.category_display_name
+  }
+
+  // Fetching the query
+  const { loading, error, data } = useFetchedQuery(superrag_endpoint, naturalQuery, queryFilters);
+  console.log("Complete search object", search)
+  console.log("Search value", search.searchString)
+  console.log("Response from SuperRAG server")
+  console.log(loading)
+  console.log(error)
+  console.log(data)
 
   return (
     <div className="container">
@@ -106,7 +73,6 @@ const AllOffers = () => {
           ))}
         </div>
       </div>
-      <PageNavigationButtons />
     </div>
   );
 };
