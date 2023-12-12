@@ -33,5 +33,10 @@ def query_product(incoming_query: UserQuery):
     # return sr_product.generate_query(natural_query)
     return sr_product.execute_query(incoming_query.natural_query, query_filters=incoming_query.query_filters)
 
+# Only for testing, just returns the query
+@app.post('/generate_product_query')
+def generate_product_query(incoming_query: UserQuery):
+    # return sr_product.generate_query(natural_query)
+    return sr_product.generate_query(incoming_query.natural_query, query_filters=incoming_query.query_filters)
 # Admin queries here
 

@@ -6,25 +6,50 @@ def generate_schema(query_tables=[], metadata_file=None, debug=False):
     """Loads the metadata if available and raises error if not available"""
     hard_coded_tmp_schema_dict = {
     "product": """
+
         Table name: product
         Table description: Contains information about products
 
         Columns:
-        id: int
-        created_at: timestamp
-        updated_at: timestamp
-        price: numeric
-        image_urls: jsonb
-        category_display_name: text
-        brand: text
-        name: text
-        description: text
+        Column name: id
+            Column type: int
+            Column description: Unique identifier for each product
+        Column name: created_at
+            Column type: timestamp
+            Column description: Timestamp when product was created
+        Column name: updated_at
+            Column type: timestamp
+            Column description: Timestamp when product was last updated
+        Column name: price
+            Column type: numeric
+            Column description: Price of the product
+        Column name: image_url
+            Column type: jsonb
+            Column description: Image url of the product
+        Column name: category_display_name
+            Column type: text
+            Column description: Display category name of the product. Possible category values are: "Home Furnishing", 
+            "Computers", "Baby Care", "Wearable Smart Devices", "Furniture", "Home Entertainment", "Home & Kitchen", 
+            "Clothing", "Beauty and Personal Care", "Sunglasses", "Tools & Hardware", "Household Supplies", "Home Improvement", 
+            "Footwear", "Gaming", "Mobiles & Accessories", "Sports & Fitness", "Health & Personal Care Appliances", 
+            "Home Decor & Festive Needs", "Pens & Stationery", "Watches", "Food & Nutrition", "Kitchen & Dining", 
+            "Pet Supplies", "Jewellery", "Cameras & Accessories", "Automotive", "eBooks", "Toys & School Supplies", 
+            "Eyewear", "Automation & Robotics", "Bags, Wallets & Belts"
+        Column name: brand
+            Column type: text
+            Column description: Brand of the product
+        Column name: name
+            Column type: text
+            Column description: Name of the product
+        Column name: description
+            Column type: text
+            Column description: Description of the product
     """
     }
 
     schema_to_be_returned = "".join("\n\n"+hard_coded_tmp_schema_dict.get(table_schema,"") 
                                     for table_schema in query_tables)
-    return schema_to_be_returned
+    return
     # -------
     # Uncomment below code when v3 metadata is available
     # -------
