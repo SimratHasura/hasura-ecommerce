@@ -44,7 +44,9 @@ const AllOffers = () => {
   // const [error, setError] = useState(null);
 
   const queryFilters = {
-    category: search.category_display_name
+    category: search.category_display_name,
+    brand: search.selectedBrands,
+    
   }
 
   // Fetching the query

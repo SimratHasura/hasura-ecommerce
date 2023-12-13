@@ -45,7 +45,7 @@ class HasuraQueryEngine:
         query_filter_statement = ""
         if query_filters:
             query_filter_statement += "Query filters:\n"
-            query_filter_statement += "\n".join(key+": "+value for key, value in query_filters.items())
+            query_filter_statement += "\n".join(key+": "+str(value) for key, value in query_filters.items())
             query_filter_statement += "\n\n"
 
         messages.append({"role": "user", "content": query_filter_statement})
