@@ -40,7 +40,7 @@ class HasuraQueryEngine:
         messages.append({"role": "user", "content": user_query})
         messages.append({"role": "system", "content": "Start all queries with keyword 'query'."})
         messages.append({"role": "system", "content": "Return all the columns of the table(s) unless specific columns are requested."})
-        messages.append({"role": "system", "content": "Use the table and column descriptions to generate query."})
+        messages.append({"role": "system", "content": "Use the schema to generate query."})
 
         query_filter_statement = ""
         if query_filters:
